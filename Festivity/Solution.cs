@@ -8,15 +8,45 @@ namespace Festivity
 {
     class Solution
     {
+        private List<Person> Ppl;
+        private List<Shift> Shifts;
         public Dictionary<Person, List<Shift>> Assignment;
         public double? Fitness;
+
+        public Solution(Festival festival)
+        {
+            this.Ppl = festival.People;
+            this.Shifts = festival.Shifts;
+            this.Assignment = new Dictionary<Person, List<Shift>>();
+
+        }
+
+        private Dictionary<Person, List<Shift>> CreateRandom()
+        {
+            do
+            {
+                var tempShifts = Shifts;
+                for (int i = 0; i < Ppl.Count; i++)
+                {
+                    if (tempShifts.Count != 0)
+                    {
+                        Assignment[Ppl[i]].Add(Shifts[0]);
+                        tempShifts.RemoveAt(0); 
+                    }
+                    
+                }
+            } while (!this.Validate());
+
+            return new Dictionary<Person, List<Shift>>;
+        }
+
         public bool Validate()
         {
             return true;
         }
-        public double Evaluate()
+        public double Evaluate(bool eval = true)
         {
-            if (Fitness == null)
+            if (Fitness == null || eval)
             {
                 // calculate Fitness
                 // 1 - calculate avarege load
@@ -29,7 +59,6 @@ namespace Festivity
                 double averageLoad = totalLoad / nOfPeople;
 
 
-                
                 Fitness = 0;
                 foreach(KeyValuePair<Person, List<Shift>> entry in Assignment)
                 {

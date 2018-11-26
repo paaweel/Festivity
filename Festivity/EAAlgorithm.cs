@@ -8,8 +8,18 @@ namespace Festivity
 {
     class EAAlgorithm
     {
-        public List<Solution> Population;
-        public Solution Best;
+
+        public EAAlgorithm(Festival festival, int populationSize = 10)
+        {
+            this.PopulationSize = populationSize;
+            this.Festival = festival;
+        }
+        
+        private Festival Festival;
+        private int PopulationSize;
+        public List<Solution> Population; //extract to another class?
+        public Solution BestSolution;
+
         public void Evolve()
         {
 
@@ -21,6 +31,7 @@ namespace Festivity
 
         public void CreateInitial()
         {
+ 
 
         }
     }
