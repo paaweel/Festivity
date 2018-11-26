@@ -37,7 +37,7 @@ namespace Festivity
                 }
             } while (!this.Validate());
 
-            return new Dictionary<Person, List<Shift>>;
+            return new Dictionary<Person, List<Shift>>();
         }
 
         public bool Validate()
