@@ -12,32 +12,63 @@ namespace Festivity
         private List<Shift> Shifts;
         public Dictionary<Person, List<Shift>> Assignment;
         public double? Fitness;
+        private Random RandomGen;
+        private bool RandomGenSet = false;
+
+        public Solution(Festival festival, Random randomGen) : this(festival)
+        {
+            this.RandomGen = randomGen;
+            this.RandomGenSet = true;
+        }
 
         public Solution(Festival festival)
         {
             this.Ppl = festival.People;
             this.Shifts = festival.Shifts;
             this.Assignment = new Dictionary<Person, List<Shift>>();
-
+            if (!RandomGenSet)
+            {
+                this.RandomGen = new Random();
+            }
         }
 
-        private Dictionary<Person, List<Shift>> CreateRandom()
+
+
+        private void CreateRandom()
         {
             do
             {
-                var tempShifts = Shifts;
-                for (int i = 0; i < Ppl.Count; i++)
+                List<int> usedPpl = new List<int>();
+                List<int> usedShifts = new List<int>();
+                int pplIndex;
+                int shiftsIndex;
+                while (usedShifts.Count < Shifts.Count)
                 {
-                    if (tempShifts.Count != 0)
+                    //generate random indexes for ppl and shifts
+                    do
                     {
-                        Assignment[Ppl[i]].Add(Shifts[0]);
-                        tempShifts.RemoveAt(0); 
+                        pplIndex = RandomGen.Next(Ppl.Count - 1);
+                    } while (usedPpl.Contains(pplIndex));
+                    usedPpl.Add(pplIndex);
+
+                    do
+                    {
+                        shiftsIndex = RandomGen.Next(Shifts.Count - 1);
+                    } while (usedShifts.Contains(shiftsIndex)) ;
+
+                    //Check if shifts have enough ppl
+                    if (Shifts[shiftsIndex].PplNeeded > Shifts[shiftsIndex].PplAssigned)
+                    {
+                        Shifts[shiftsIndex].PplAssigned++;
                     }
-                    
+                    else
+                    {
+                        usedShifts.Add(shiftsIndex);
+                    }
+
+                    Assignment[Ppl[pplIndex]].Add(Shifts[shiftsIndex]);
                 }
             } while (!this.Validate());
-
-            return new Dictionary<Person, List<Shift>>();
         }
 
         public bool Validate()

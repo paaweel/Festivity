@@ -16,6 +16,7 @@ namespace Festivity
             this.PplNeeded = pplNeeded;
             this.When = new TimeTable(start, end);
             this.Where = location;
+            this.PplAssigned = 0;
 
         }
         //event - some label, way easier to just operate on shifts directly
@@ -23,5 +24,6 @@ namespace Festivity
         public int Where { get; set; }
         public int PplNeeded { get; set; }
         public int id;
+        public int PplAssigned { get; set; }
     }
 }
