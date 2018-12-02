@@ -12,12 +12,12 @@ namespace Festivity
         private List<Shift> Shifts;
         public Dictionary<Person, List<Shift>> Assignment;
         public double? Fitness;
-        private Random RandomGen;
+        static private Random RandomGen = new Random();
         private bool RandomGenSet = false;
 
         public Solution(Festival festival, Random randomGen) : this(festival)
         {
-            this.RandomGen = randomGen;
+            //this.RandomGen = randomGen;
             this.RandomGenSet = true;
         }
 
@@ -28,52 +28,50 @@ namespace Festivity
             this.Assignment = new Dictionary<Person, List<Shift>>();
             if (!RandomGenSet)
             {
-                this.RandomGen = new Random();
+                //this.RandomGen = new Random();
             }
+            CreateRandom();
         }
 
 
 
-        private void CreateRandom()
+        public void CreateRandom()
         {
+            
             do
             {
-                List<int> usedPpl = new List<int>();
+                
                 List<int> usedShifts = new List<int>();
                 int pplIndex;
                 int shiftsIndex;
-                while (usedShifts.Count < Shifts.Count)
+                while (usedShifts.Count <= Shifts.Count)
                 {
                     //generate random indexes for ppl and shifts
-                    do
-                    {
-                        pplIndex = RandomGen.Next(Ppl.Count - 1);
-                    } while (usedPpl.Contains(pplIndex));
-                    usedPpl.Add(pplIndex);
+                    pplIndex = RandomGen.Next(Ppl.Count);
 
                     do
                     {
-                        shiftsIndex = RandomGen.Next(Shifts.Count - 1);
-                    } while (usedShifts.Contains(shiftsIndex)) ;
+                        shiftsIndex = RandomGen.Next(Shifts.Count);
+                    } while (usedShifts.Contains(shiftsIndex) && usedShifts.Count < Shifts.Count);
 
-                    //Check if shifts have enough ppl
-                    if (Shifts[shiftsIndex].PplNeeded > Shifts[shiftsIndex].PplAssigned)
-                    {
-                        Shifts[shiftsIndex].PplAssigned++;
-                    }
-                    else
-                    {
-                        usedShifts.Add(shiftsIndex);
-                    }
+                    //Shifts[shiftsIndex].PplAssigned++;
 
+                    usedShifts.Add(shiftsIndex);
+
+                    if (!Assignment.ContainsKey(Ppl[pplIndex]))
+                    {
+                        Assignment.Add(Ppl[pplIndex], new List<Shift>());
+                    }
                     Assignment[Ppl[pplIndex]].Add(Shifts[shiftsIndex]);
+                    
                 }
             } while (!this.Validate());
         }
 
         public bool Validate()
         {
-            return true;
+            bool valid = true;
+            return valid;
         }
         public double Evaluate(bool eval = true)
         {

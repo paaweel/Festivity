@@ -15,6 +15,15 @@ namespace Festivity
                 {20, 0, 10},
                 {10, 20, 0}
             };
+
+            People = new List<Person>();
+
+            People.Add(new Person());
+            People.Add(new Person());
+            People.Add(new Person());
+
+            Shifts = new List<Shift>();
+
             Shifts.Add(new Shift(new DateTime(2018, 10, 10, 10, 10, 10, 10),    //start
                                  new DateTime(2018, 10, 10, 11, 10, 10, 10),    //end
                                  3,                                             //pplNeeded

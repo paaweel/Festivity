@@ -16,8 +16,16 @@ namespace Festivity
 
         public EAAlgorithm(Festival festival, int populationSize = 10)
         {
+            BestSolution = new Solution(festival);
             this.PopulationSize = populationSize;
             this.Festival = festival;
+            Population = new List<Solution>();
+            
+            for (int i = 0; i < PopulationSize; ++i)
+            {
+                Population.Add(new Solution(festival, RandomGen));
+            }
+           
         }
 
         public void Evolve()
@@ -31,7 +39,10 @@ namespace Festivity
 
         public void CreateInitial()
         {
- 
+            foreach (var solution in Population)
+            {
+                solution.CreateRandom();
+            }
 
         }
     }

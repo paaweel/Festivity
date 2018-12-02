@@ -15,7 +15,7 @@ namespace Festivity
         }
 
         private static int _id = 0;
-        private int id;
+        public int id;
 
         public List<TimeTable> Availability { get; set; }
         public List<TimeTable> Preferences { get; set; }
