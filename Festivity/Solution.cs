@@ -68,11 +68,35 @@ namespace Festivity
             } while (!this.Validate());
         }
 
-        public bool Validate()
-        {
-            bool valid = true;
-            return valid;
-        }
+ public bool Validate(Festival festival)
+    {
+        int howManyPpl = Ppl.Count;
+        int sizeOfList = Shifts.Count;
+        int[] shiftDuration = new int [sizeOfList];
+        TimeSpan maxShiftDuration = new TimeSpan(3,0,0);
+
+            while (sizeOfList >= 0)
+            {
+                if (Shifts[sizeOfList].PplNeeded < howManyPpl)
+                    Console.WriteLine("Not enough people");
+                //tutaj przy okazji trzeba jakos przypisac zmiany wolontariuszom, żeby możn też było sprawdzić
+                //czy jest wystarczajaca ilosc z dyspozycyjnoscia na konkretna zmiane
+                festival. Shifts[sizeOfList].Where
+                sizeOfList--;
+            }
+
+            while (howManyPpl >= 0)
+            {
+                if (Shifts[sizeOfList].When.GetDuration() > maxShiftDuration)
+                    Console.WriteLine("Shift duration is too long");
+                //tutaj nalezy dodac funkcjonalnosc sprawdzania czy wolontariusz nie ma kilku zmian pod rząd
+                //które przekraczają maksymalny czas jednej zmiany
+                howManyPpl--;
+            }
+
+        return true;
+    }
+
         public double Evaluate(bool eval = true)
         {
             if (Fitness == null || eval)
