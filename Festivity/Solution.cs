@@ -70,29 +70,62 @@ namespace Festivity
 
  public bool Validate(Festival festival)
     {
+        TimeSpan counter = new TimeSpan(0,0,0);
         int howManyPpl = Ppl.Count;
         int sizeOfList = Shifts.Count;
         int[] shiftDuration = new int [sizeOfList];
+        TimeSpan minHoursofWork = new TimeSpan(30,0,0);
         TimeSpan maxShiftDuration = new TimeSpan(3,0,0);
+             
+         while (howManyPpl >= 0)
+             {  
+                    if(Ppl[howManyPpl].Availability.GetDuration() < minHoursofWork)
+                    {
+                        Console.WriteLine("Not enough hours of work.");
+                        return false;
+                    }
 
-            while (sizeOfList >= 0)
-            {
-                if (Shifts[sizeOfList].PplNeeded < howManyPpl)
-                    Console.WriteLine("Not enough people");
-                //tutaj przy okazji trzeba jakos przypisac zmiany wolontariuszom, żeby możn też było sprawdzić
-                //czy jest wystarczajaca ilosc z dyspozycyjnoscia na konkretna zmiane
-                festival. Shifts[sizeOfList].Where
-                sizeOfList--;
-            }
+                     while (sizeOfList >= 0)
+                     {
+                        if((Shifts[sizeOfList].PplNeeded - Shifts[sizeOfList].PplAssigned) != 0)
+                        {
+                            if (Ppl.All.Availability[Shifts[sizeOfList].When] != (0,0,0))
+                            {
+                                Console.WriteLine("There are still some people who can be assigned to this shift.");
+                                return false;
+                                  //no to nie jest do konca zrobione, bo nie ma metody Assign i nie można sprawdzić
+                                  //czy ktos juz dostał te zmiane
+                            }
 
-            while (howManyPpl >= 0)
-            {
-                if (Shifts[sizeOfList].When.GetDuration() > maxShiftDuration)
-                    Console.WriteLine("Shift duration is too long");
-                //tutaj nalezy dodac funkcjonalnosc sprawdzania czy wolontariusz nie ma kilku zmian pod rząd
-                //które przekraczają maksymalny czas jednej zmiany
-                howManyPpl--;
-            }
+                            Console.WriteLine("There is more people needed for this shift.");
+                         //  if(Ppl[howManyPpl].Availability[Shifts[sizeOfList].When() != (0,0,0)])
+                           // Console.WriteLine("This person can be assigned to this shift.");
+                           return false;
+                        }
+
+                        if (Ppl.All.Availability[Shifts[sizeOfList].When] == (0,0,0))
+                        {
+                            Console.WriteLine("Not enough people");
+                            return false;
+                              //tutaj przy okazji trzeba jakos przypisac zmiany wolontariuszom, żeby możn też było sprawdzić
+                              //czy jest wystarczajaca ilosc z dyspozycyjnoscia na konkretna zmiane
+                        }
+
+                        //elko brakuje mi tu metody Assign, jak będzie, to sprawdzę jeszcze czy nie za długa
+                        //jest jedna zmiana
+             
+                        if (Shifts[sizeOfList].When.GetDuration() > maxShiftDuration)
+                            Console.WriteLine("Shift duration is too long");
+                        //tutaj nalezy dodac funkcjonalnosc sprawdzania czy wolontariusz nie ma kilku zmian pod rząd
+                        //które przekraczają maksymalny czas jednej zmiany
+                           sizeOfList--;             
+                     }
+
+
+
+                    howManyPpl--;
+                }
+           
 
         return true;
     }

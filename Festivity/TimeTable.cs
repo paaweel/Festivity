@@ -8,13 +8,15 @@ namespace Festivity
 {
     class TimeTable
     {
+        public DateTime Start;
+        public DateTime End;
+
         public TimeTable(DateTime start, DateTime end)
         {
             this.Start = start;
             this.End = end;
         }
-        public DateTime Start;
-        public DateTime End;
+     
         public TimeSpan GetDuration()
         {
             var span = End - Start;
