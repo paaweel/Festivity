@@ -8,14 +8,13 @@ namespace Festivity
 {
     class Person
     {
+        private static int _id = 0;
+        public int id;
+
         public Person()
         {
             id = _id;
-            ++_id;
         }
-
-        private static int _id = 0;
-        public int id;
 
         public List<TimeTable> Availability { get; set; }
         public List<TimeTable> Preferences { get; set; }
