@@ -13,13 +13,13 @@ namespace Festivity
         public List<Solution> Population; //extract to another class?
         public Solution BestSolution;
         private static Random RandomGen = new Random();
-        public IDataLoader dataLoader = new DataLoaderJson();
+        public IDataLoader DataLoader = new DataLoaderJson();
 
         public EAAlgorithm(Festival festival, int populationSize = 10)
         {
+            Festival = DataLoader.LoadData();
             BestSolution = new Solution(festival);
             PopulationSize = populationSize;
-            Festival = festival;
             Population = new List<Solution>();
             
             for (int i = 0; i < PopulationSize; ++i)
@@ -31,7 +31,10 @@ namespace Festivity
 
         public void Evolve()
         {
-            
+            var parent1 = Population[0];
+            var parent2 = Population[1];
+
+
         }
 
         public void Mutate()

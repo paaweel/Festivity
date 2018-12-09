@@ -18,7 +18,7 @@ namespace Festivity
             Id = _id;
             _id++;
             if (availability != null) Availability = availability;
-            if (preferences != null) Preferences = preferences
+            if (preferences != null) Preferences = preferences;
     
         }      
     }
