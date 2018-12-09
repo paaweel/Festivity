@@ -8,25 +8,24 @@ namespace Festivity
 {
     class Shift
     {
-        public TimeTable When;
-        public int Where { get; set; }
-        public int PplNeeded { get; set; }
-        public int id;
+        public int EventId { get; private set; }
+        public int Id { get; private set; }
+        public TimeTable When { get; private set; }
+        public int Where { get; private set; }
+        public int PplNeeded { get; private set; }
         public int PplAssigned { get; set; }
 
         private static int _id = 0;
 
-        public Shift(DateTime start, DateTime end, int pplNeeded, int location)
+        public Shift(DateTime start, DateTime end, int pplNeeded, int location, int eventId) 
         {
-            id = _id;
-            //_id++;
-            this.PplNeeded = pplNeeded;
-            this.When = new TimeTable(start, end);
-            this.Where = location;
-            this.PplAssigned = 0;
-
+            EventId = eventId;
+            Id = _id;
+            _id++; //id == current number of shifts, incremented every time a shift is added 
+            PplNeeded = pplNeeded;
+            When = new TimeTable(start, end);
+            Where = location;
+            PplAssigned = 0;
         }
-        //event - some label, way easier to just operate on shifts directly
-
     }
 }
