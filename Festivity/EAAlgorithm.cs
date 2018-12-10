@@ -15,19 +15,19 @@ namespace Festivity
         private static Random RandomGen = new Random();
         public IDataLoader DataLoader = new DataLoaderJson();
 
-        public EAAlgorithm(Festival festival, int populationSize = 10)
+        public EAAlgorithm(int populationSize = 10)
         {
-            Festival = DataLoader.LoadData();
-            BestSolution = new Solution(festival);
+            Festival = DataLoader.LoadData("test");
+            BestSolution = new Solution(Festival);
             PopulationSize = populationSize;
             Population = new List<Solution>();
-            
+
             for (int i = 0; i < PopulationSize; ++i)
             {
-                Population.Add(new Solution(festival, RandomGen));
+                Population.Add(new Solution(Festival, RandomGen));
             }
-           
         }
+
 
         public void Evolve()
         {
