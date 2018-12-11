@@ -66,10 +66,10 @@ namespace Festivity
             this.Evaluate();
         }
 
-        public bool Validate() //Festival festival)
+        public bool Validate(Festival festival)
         {
             bool validity = true;
-            /*
+            
             TimeSpan counter = new TimeSpan(0, 0, 0);
             int howManyPpl = Ppl.Count;
             int sizeOfList = Shifts.Count;
@@ -125,7 +125,6 @@ namespace Festivity
                 }
                 howManyPpl--;
             }
-            */
             return validity;
         }
 
