@@ -15,7 +15,7 @@ namespace Festivity
             IDataLoader l = new DataLoaderJson();
             Festival f = l.LoadData("test");
 
-            Console.WriteLine(f.People[].Id);
+        //    Console.WriteLine(f.People[].Id);
 
             Console.ReadKey();
             //TimeTable t1 = new TimeTable();
