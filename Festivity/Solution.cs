@@ -8,8 +8,8 @@ namespace Festivity
 {
     class Solution
     {
-        private List<Person> Ppl;
-        private List<Shift> Shifts;
+        private static List<Person> Ppl;
+        private static List<Shift> Shifts;
         public Dictionary<Person, List<Shift>> Assignment;
         private double? Fitness;
         static private Random RandomGen = new Random();
@@ -42,6 +42,19 @@ namespace Festivity
             return true;
         }
 
+        public bool Assign(Person person, List<Shift> shifts)
+        {
+            bool ret = true;
+            foreach (var shift in shifts)
+            {
+                if (Assign(person, shift) != true)
+                {
+                    ret = false;
+                }
+            }
+            return ret;
+        }
+
         public void CreateRandom()
         {
             do
@@ -65,11 +78,11 @@ namespace Festivity
             } while (!this.Validate());
             this.Evaluate();
         }
-
-        public bool Validate(Festival festival)
+       
+        public bool Validate()
         {
             bool validity = true;
-            
+            /*
             TimeSpan counter = new TimeSpan(0, 0, 0);
             int howManyPpl = Ppl.Count;
             int sizeOfList = Shifts.Count;
@@ -125,6 +138,7 @@ namespace Festivity
                 }
                 howManyPpl--;
             }
+            */
             return validity;
         }
 
