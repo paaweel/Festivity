@@ -35,6 +35,10 @@ namespace Festivity
         public void Run()
         {
             Evaluate();
+            if (BestSolution.Evaluate() < Population[0].Evaluate())
+            {
+                BestSolution = Population[0];
+            }
             NewPopulation.AddRange(Elites());
             NewPopulation.AddRange(Crossover());
             while (NewPopulation.Count < Population.Count)
