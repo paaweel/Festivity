@@ -11,7 +11,7 @@ namespace Festivity
         private Festival Festival;
         private int PopulationSize;
         private int _ElitesNumber = 3;
-        private int _CrossoverNumber = 3;
+        private int _CrossoverNumber = 60;
         public List<Solution> Population; //extract to another class?
         public List<Solution> NewPopulation;
         public Solution BestSolution;
@@ -35,10 +35,6 @@ namespace Festivity
         public void Run()
         {
             Evaluate();
-            if (BestSolution.Evaluate() < Population[0].Evaluate())
-            {
-                BestSolution = Population[0];
-            }
             NewPopulation.AddRange(Elites());
             NewPopulation.AddRange(Crossover());
             while (NewPopulation.Count < Population.Count)
@@ -46,7 +42,7 @@ namespace Festivity
                 NewPopulation.Add(new Solution(Festival, RandomGen));
             }
             Population = NewPopulation;
-            NewPopulation.Clear();
+            NewPopulation = new List<Solution>(PopulationSize);
         }
 
         public List<Solution> Elites()
@@ -124,10 +120,12 @@ namespace Festivity
 
         public void Evaluate()
         {
-            Population.Sort((x, y) => x.Evaluate().CompareTo(y.Evaluate())); //sort by fitness
-            if (BestSolution.Evaluate() < Population[0].Evaluate())
+            Population.Sort((x, y) => x.Evaluate(true).CompareTo(y.Evaluate(true))); //sort by fitness
+            
+            if (BestSolution.Evaluate(true) > Population[0].Evaluate(true))
             {
-                BestSolution = Population[0];
+                BestSolution.Assignment = Population[0].Assignment;
+                BestSolution.Evaluate(true);
                 //event - bestSolution changed
             }
         }

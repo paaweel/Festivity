@@ -8,8 +8,8 @@ namespace Festivity
 {
     class Solution
     {
-        private static List<Person> Ppl;
-        private static List<Shift> Shifts;
+        private List<Person> Ppl;
+        private List<Shift> Shifts;
         public Dictionary<Person, List<Shift>> Assignment;
         private double? Fitness;
         static private Random RandomGen = new Random();
@@ -22,7 +22,10 @@ namespace Festivity
             if (randomGen != null) RandomGen = randomGen;
             else RandomGen = new Random();
             Fitness = null;
-
+            foreach (var person in Ppl)
+            {
+                Assignment.Add(person, new List<Shift>());
+            }
             CreateRandom();
         }
 
@@ -151,16 +154,16 @@ namespace Festivity
 
                 // 1 - calculate avarege load
                 int nOfPeople = Assignment.Count;
-                int totalLoad = 0;
+                double totalLoad = 0;
                 foreach (KeyValuePair<Person, List<Shift>> entry in Assignment)
                 {
-                    totalLoad += entry.Value.Sum(item => item.When.GetDuration().Minutes);
+                    totalLoad += entry.Value.Sum(item => item.When.GetDuration().TotalMinutes);
                 }
                 double averageLoad = totalLoad / nOfPeople;
 
                 foreach (KeyValuePair<Person, List<Shift>> entry in Assignment)
                 {
-                    int load = entry.Value.Sum(item => item.When.GetDuration().Minutes);
+                    double load = entry.Value.Sum(item => item.When.GetDuration().TotalMinutes);
                     foreach (var shift in entry.Value)
                     {
                         Fitness += Math.Sqrt(Math.Pow(load - averageLoad, 2.00));

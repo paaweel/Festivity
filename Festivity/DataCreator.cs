@@ -31,7 +31,7 @@ namespace Festivity
                 {
                     //TODO: check if they overlap
                     DateTime start = new DateTime(2018, 10, 1).AddHours(random.Next(days * 24 - 1));
-                    DateTime end = new DateTime(start.Hour, start.Month, start.Day, start.Hour, 0, 0).AddHours(2);
+                    DateTime end = start.AddHours(2);
                     ava.Add(new TimeTable(start, end));
                 }
 
@@ -50,7 +50,7 @@ namespace Festivity
             {
                 //TODO: check if they overlap
                 DateTime start = new DateTime(2018, 10, 1).AddHours(random.Next(days * 24 - 1));
-                DateTime end = new DateTime(start.Hour, start.Month, start.Day, start.Hour, 0, 0).AddHours(1);
+                DateTime end = start.AddHours(1);
                 shifts.Add(new Shift(start, end, random.Next(5), random.Next(location), random.Next(5)));
             }
 
