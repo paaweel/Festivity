@@ -10,7 +10,7 @@ namespace Festivity
     {
         public int EventId { get; private set; }
         public int Id { get; private set; }
-        public TimeTable When { get; private set; }
+        public TimeTable When { get; set; }
         public int Where { get; private set; }
         public int PplNeeded { get; private set; }
         public int PplAssigned { get; set; }

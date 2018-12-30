@@ -22,7 +22,10 @@ namespace Festivity
             if (randomGen != null) RandomGen = randomGen;
             else RandomGen = new Random();
             Fitness = null;
-
+            foreach (var person in Ppl)
+            {
+                Assignment.Add(person, new List<Shift>());
+            }
             CreateRandom();
         }
 
@@ -40,6 +43,19 @@ namespace Festivity
             }
             Assignment[person].Add(shift);
             return true;
+        }
+
+        public bool Assign(Person person, List<Shift> shifts)
+        {
+            bool ret = true;
+            foreach (var shift in shifts)
+            {
+                if (Assign(person, shift) != true)
+                {
+                    ret = false;
+                }
+            }
+            return ret;
         }
 
         public void CreateRandom()
@@ -65,11 +81,11 @@ namespace Festivity
             } while (!this.Validate());
             this.Evaluate();
         }
-
-        public bool Validate(Festival festival)
+       
+        public bool Validate()
         {
             bool validity = true;
-            
+            /*
             TimeSpan counter = new TimeSpan(0, 0, 0);
             int howManyPpl = Ppl.Count;
             int sizeOfList = Shifts.Count;
@@ -125,6 +141,7 @@ namespace Festivity
                 }
                 howManyPpl--;
             }
+            */
             return validity;
         }
 
@@ -137,16 +154,16 @@ namespace Festivity
 
                 // 1 - calculate avarege load
                 int nOfPeople = Assignment.Count;
-                int totalLoad = 0;
+                double totalLoad = 0;
                 foreach (KeyValuePair<Person, List<Shift>> entry in Assignment)
                 {
-                    totalLoad += entry.Value.Sum(item => item.When.GetDuration().Minutes);
+                    totalLoad += entry.Value.Sum(item => item.When.GetDuration().TotalMinutes);
                 }
                 double averageLoad = totalLoad / nOfPeople;
 
                 foreach (KeyValuePair<Person, List<Shift>> entry in Assignment)
                 {
-                    int load = entry.Value.Sum(item => item.When.GetDuration().Minutes);
+                    double load = entry.Value.Sum(item => item.When.GetDuration().TotalMinutes);
                     foreach (var shift in entry.Value)
                     {
                         Fitness += Math.Sqrt(Math.Pow(load - averageLoad, 2.00));

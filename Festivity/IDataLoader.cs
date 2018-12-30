@@ -37,8 +37,8 @@ namespace Festivity
 
         public Festival LoadData(string fileName)
         {
-            List<Person> ppl;
-            List<Shift> shifts;
+            List<Person> ppl = new List<Person>();
+            List<Shift> shifts = new List<Shift>();
             int[,] locations;
             using (StreamReader r = new StreamReader(fileName + "_ppl.json"))
             {
@@ -48,7 +48,7 @@ namespace Festivity
             using (StreamReader r = new StreamReader(fileName + "_shifts.json"))
             {
                 string json = r.ReadToEnd();
-                 shifts = JsonConvert.DeserializeObject<List<Shift>>(json);
+                shifts = JsonConvert.DeserializeObject<List<Shift>>(json);
             }
             using (StreamReader r = new StreamReader(fileName + "_locs.json"))
             {
