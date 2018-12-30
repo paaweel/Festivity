@@ -8,8 +8,8 @@ namespace Festivity
 {
     class TimeTable
     {
-        public DateTime Start;
-        public DateTime End;
+        public DateTime Start { get; private set;  }
+        public DateTime End { get; private set; }
 
         public TimeTable(DateTime start, DateTime end)
         {

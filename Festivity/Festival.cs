@@ -8,43 +8,41 @@ namespace Festivity
 {
     class Festival
     {
+        public List<Shift> Shifts { get; set; }
+        public List<Person> People { get; set; }
+        public int[,] Locations;
+
         public Festival()
         {
-            Locations = new int[3, 3] {
-                {0, 10, 20},
-                {20, 0, 10},
-                {10, 20, 0}
-            };
-
+            Console.WriteLine("Creating empty Festival");
             People = new List<Person>();
-
-            People.Add(new Person());
-            People.Add(new Person());
-            People.Add(new Person());
-
             Shifts = new List<Shift>();
-
-            Shifts.Add(new Shift(new DateTime(2018, 10, 10, 10, 10, 10, 10),    //start
-                                 new DateTime(2018, 10, 10, 11, 10, 10, 10),    //end
-                                 3,                                             //pplNeeded
-                                 1));                                           //loc
-
-            Shifts.Add(new Shift(new DateTime(2018, 10, 11, 10, 10, 10, 10),    //start
-                                 new DateTime(2018, 10, 11, 13, 10, 10, 10),    //end
-                                 2,                                             //pplNeeded
-                                 0));                                           //loc
-
-            Shifts.Add(new Shift(new DateTime(2018, 10, 10, 11, 10, 10, 10),    //start
-                                 new DateTime(2018, 10, 10, 12, 10, 10, 10),    //end
-                                 1,                                             //pplNeeded
-                                 2));                                           //loc
+            Locations = new int[3,3];
         }
-        public List<Shift> Shifts;
-        public List<Person> People;
-        public int[,] Locations;
-        public TimeSpan GetTravelTime(int Location1, int Location2)
+
+        public Festival(List<Person> people, List<Shift> shifts, int[,] locations)
         {
-            TimeSpan TravelTime = new TimeSpan(0, Locations[Location1, Location2], 0);
+            string errorMsg = "";
+            if (people != null) People = people;
+            else errorMsg = " people";
+
+            if (shifts != null) Shifts = shifts;
+            else errorMsg += " shifts";
+            
+            if (locations != null) Locations = locations;
+            else errorMsg += " locations";
+
+            if(errorMsg != "")
+                Console.WriteLine("Values of" + errorMsg + " have not been set properly!");
+        }
+        
+        public TimeSpan GetTravelTime(int location1, int location2)
+        {
+            TimeSpan TravelTime;
+            if (location1 < Locations.GetLength(0) && location2 < Locations.GetLength(1))
+                TravelTime = new TimeSpan(0, Locations[location1, location2], 0);
+            else
+                TravelTime = new TimeSpan(100000, 0, 0); //set to infinity
             return TravelTime;
         }
     }
