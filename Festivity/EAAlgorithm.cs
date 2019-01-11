@@ -6,19 +6,22 @@ using System.Threading.Tasks;
 
 namespace Festivity
 {
-    class EAAlgorithm
+    public class EAAlgorithm
     {
         private Festival Festival;
         private int PopulationSize;
-        private int _ElitesNumber = 3;
-        private int _CrossoverNumber = 60;
-        public List<Solution> Population; //extract to another class?
-        public List<Solution> NewPopulation;
-        public Solution BestSolution;
+        private int _ElitesNumber;
+        private int _CrossoverNumber;
+        private double _MutationPr;
+        private List<Solution> Population; //extract to another class?
+        private List<Solution> NewPopulation;
+        private Solution BestSolution;
         private static Random RandomGen = new Random();
-        public IDataLoader DataLoader = new DataLoaderJson();
+        private IDataLoader DataLoader = new DataLoaderJson();
 
-        public EAAlgorithm(int populationSize = 10)
+        public List<double> BestSolLog = new List<double>();
+
+        public EAAlgorithm(int populationSize = 10, int elitesNumber = 2, int crossoverNumber = 5, double mutationPr= 0.2)
         {
             Festival = DataLoader.LoadData("test");
             BestSolution = new Solution(Festival);
@@ -26,10 +29,19 @@ namespace Festivity
             Population = new List<Solution>(PopulationSize);
             NewPopulation = new List<Solution>(PopulationSize);
 
+            _ElitesNumber = elitesNumber;
+            _CrossoverNumber = crossoverNumber;
+            _MutationPr = mutationPr;
+
             for (int i = 0; i < PopulationSize; ++i)
             {
                 Population.Add(new Solution(Festival, RandomGen));
             }
+        }
+
+        public List<double> GetBestSolutionFitness()
+        {
+            return BestSolLog;
         }
 
         public void Run()
@@ -41,11 +53,18 @@ namespace Festivity
             {
                 NewPopulation.Add(new Solution(Festival, RandomGen));
             }
+            foreach (var sol in NewPopulation)
+            {
+                if (RandomGen.NextDouble() <= _MutationPr)
+                {
+                    Mutate(sol);
+                }
+            }
             Population = NewPopulation;
             NewPopulation = new List<Solution>(PopulationSize);
         }
 
-        public List<Solution> Elites()
+        private List<Solution> Elites()
         {
             var elites = new List<Solution>(_ElitesNumber);
             for (int i = 0; i < _ElitesNumber; i++)
@@ -55,7 +74,7 @@ namespace Festivity
             return elites;
         }
 
-        public List<Solution> Selection()
+        private List<Solution> Selection()
         {
             double totalFitness = Population.Sum(item => item.Evaluate());
             List<Solution> Parents = new List<Solution>(2);
@@ -84,17 +103,16 @@ namespace Festivity
                 }
             } while (Parents.Count != 2);
 
-
             return Parents;
         }
 
-        public List<Solution> Crossover()
+        private List<Solution> Crossover()
         {
             var children = new List<Solution>(_CrossoverNumber);
             for (int i = 0; i < _CrossoverNumber; i++)
             {
                 var parents = Selection();
-                int pivot = RandomGen.Next(1, Festival.People.Count - 1);
+                int pivot = (Festival.People.Count - 1) / 2; //RandomGen.Next(1, Festival.People.Count - 1);
                 int counter = 0;
                 var child = new Solution(Festival, RandomGen);
                 foreach (var person in Festival.People)
@@ -113,9 +131,17 @@ namespace Festivity
             return children;
         }
 
-        public void Mutate(Solution chromosome)
+        private void Mutate(Solution chromosome)
         {
-
+            var person1 = Festival.People[RandomGen.Next(Festival.People.Count)];
+            var person2 = Festival.People[RandomGen.Next(Festival.People.Count)];
+            while (person1 == person2)
+            {
+                person1 = Festival.People[RandomGen.Next(Festival.People.Count)];
+            }
+            var temp = chromosome.Assignment[person1];
+            chromosome.Assign(person1, chromosome.Assignment[person2], true);
+            chromosome.Assign(person2, temp, true);
         }
 
         public void Evaluate()
@@ -124,8 +150,8 @@ namespace Festivity
             
             if (BestSolution.Evaluate(true) > Population[0].Evaluate(true))
             {
-                BestSolution.Assignment = Population[0].Assignment;
-                BestSolution.Evaluate(true);
+                BestSolution = new Solution(Population[0]);
+                BestSolLog.Add(BestSolution.Evaluate(true));
                 //event - bestSolution changed
             }
         }

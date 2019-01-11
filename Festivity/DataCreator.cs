@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Festivity
 {
-    class DataCreator
+    public class DataCreator
     {
         private List<Person> ppl;
         private List<Shift> shifts;

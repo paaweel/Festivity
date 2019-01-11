@@ -22,5 +22,30 @@ namespace Festivity
             var span = End - Start;
             return span.Duration();
         }
+
+        public double Contains(TimeTable value)
+        {
+            //checks if given value is in the span of a caller
+            //0 if contains
+            //+1 for each minute
+            double result = 0;
+            if (Start <= value.Start)
+            {
+                if (End >= value.End)
+                {
+                    result = 0;
+                }
+                else
+                {
+                    result = (value.End - End).TotalMinutes;
+                }
+            }
+            else
+            {
+                result = (Start - value.Start).TotalMinutes;
+            }
+
+            return result;
+        }
     }
 }

@@ -15,12 +15,12 @@ namespace Festivity
             DataCreator d = new DataCreator();
             d.CreateAndSaveDataToFile("test", 20, 40);
 
-            EAAlgorithm alg = new EAAlgorithm(100);
+            EAAlgorithm alg = new EAAlgorithm();
             
             for (int i = 0; i < 100; ++i)
             {
                 alg.Run();
-                Console.WriteLine(alg.BestSolution.Evaluate());
+                Console.WriteLine(alg.GetBestSolutionFitness().Last());
             }
 
             Console.ReadKey();

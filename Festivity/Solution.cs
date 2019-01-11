@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Festivity
 {
-    class Solution
+     class Solution
     {
         private List<Person> Ppl;
         private List<Shift> Shifts;
@@ -29,6 +29,14 @@ namespace Festivity
             CreateRandom();
         }
 
+        public Solution (Solution sol)
+        {
+            Ppl = sol.Ppl;
+            Shifts = sol.Shifts;
+            Assignment = sol.Assignment.ToDictionary(   entry => entry.Key,
+                                                        entry => entry.Value);
+        }
+
         public bool Assign(int pplIndex, int shiftsIndex)
         {
             //TODO: check if exeeds dimensions
@@ -45,16 +53,24 @@ namespace Festivity
             return true;
         }
 
-        public bool Assign(Person person, List<Shift> shifts)
+        public bool Assign(Person person, List<Shift> shifts, bool exchange = false)
         {
             bool ret = true;
-            foreach (var shift in shifts)
+            if (exchange == false)
             {
-                if (Assign(person, shift) != true)
+                foreach (var shift in shifts)
                 {
-                    ret = false;
+                    if (Assign(person, shift) != true)
+                    {
+                        ret = false;
+                    }
                 }
             }
+            else
+            {
+                Assignment[person] = shifts;
+            }
+            
             return ret;
         }
 
@@ -160,20 +176,20 @@ namespace Festivity
                     totalLoad += entry.Value.Sum(item => item.When.GetDuration().TotalMinutes);
                 }
                 double averageLoad = totalLoad / nOfPeople;
+                double load;
 
                 foreach (KeyValuePair<Person, List<Shift>> entry in Assignment)
                 {
-                    double load = entry.Value.Sum(item => item.When.GetDuration().TotalMinutes);
-                    foreach (var shift in entry.Value)
-                    {
-                        Fitness += Math.Sqrt(Math.Pow(load - averageLoad, 2.00));
-                    }
+                    //calculate load of a given person
+                    load = entry.Value.Sum(item => item.When.GetDuration().TotalMinutes);
+                    //compare to avarage load
+                    Fitness += Math.Sqrt(Math.Pow(load - averageLoad, 2.00));
+                    //preferences
+                    Fitness += entry.Key.CompareToPref(entry.Value);
                 }
-
-                // 2 - preferences??
-                // 3 - ???
             }
             return (double)Fitness;
         }
+
     }
 }
