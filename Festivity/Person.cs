@@ -26,6 +26,7 @@ namespace Festivity
         {
             double result;
             double returnValue = 0;
+            result = Double.MaxValue;
             foreach (var shift in shifts)
             {
                 result = Double.MaxValue;

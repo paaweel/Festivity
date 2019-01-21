@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,14 +12,22 @@ namespace Festivity
     {
         private List<Person> Ppl;
         private List<Shift> Shifts;
+        private int [,] Loc;
         public Dictionary<Person, List<Shift>> Assignment;
+        public double FitnessPref { private set; get; }
+        public double FitnessLoad { private set; get; }
         private double? Fitness;
+        static public int InvalidDueToLocalization = 0;
+        static public int InvalidDueToWorkingOver6Day = 0;
+        static public int InvalidDueToShiftsOverlap = 0;
+        static public int AllChecked = 0;
         static private Random RandomGen = new Random();
 
         public Solution(Festival festival, Random randomGen = null)
         {
             Ppl = festival.People;
             Shifts = festival.Shifts;
+            Loc = festival.Locations;
             Assignment = new Dictionary<Person, List<Shift>>();
             if (randomGen != null) RandomGen = randomGen;
             else RandomGen = new Random();
@@ -49,7 +59,8 @@ namespace Festivity
             {
                 Assignment.Add(person, new List<Shift>());
             }
-            Assignment[person].Add(shift);
+            if (!Assignment[person].Contains(shift))
+                Assignment[person].Add(shift);
             return true;
         }
 
@@ -94,71 +105,87 @@ namespace Festivity
                     this.Assign(pplIndex, shiftsIndex);
 
                 }
-            } while (!this.Validate());
+            } while (!Validate());
+            Console.WriteLine("GOT OUT CR---------");
             this.Evaluate();
         }
        
         public bool Validate()
         {
-            bool validity = true;
-            /*
-            TimeSpan counter = new TimeSpan(0, 0, 0);
-            int howManyPpl = Ppl.Count;
-            int sizeOfList = Shifts.Count;
-            int[] shiftDuration = new int[sizeOfList];
-            TimeSpan minHoursofWork = new TimeSpan(30, 0, 0);
-            TimeSpan maxShiftDuration = new TimeSpan(3, 0, 0);
-
-            while (howManyPpl >= 0)
+            Console.WriteLine(AllChecked - InvalidDueToLocalization - InvalidDueToShiftsOverlap - InvalidDueToWorkingOver6Day);
+            //sort shifts
+            foreach (var entry in Assignment) 
             {
-                if (Ppl[howManyPpl].Availability.GetDuration() < minHoursofWork)
+                
+                entry.Value.Sort((x, y) => x.When.Start.CompareTo(y.When.Start));
+                if (entry.Value.Count == 0)
                 {
-                    Console.WriteLine("Not enough hours of work.");
-                    validity = false;
-                    break;
+                    continue;
                 }
-
-                while (sizeOfList >= 0)
+                bool repairAttempted = false;
+                
+                int CurrentDay = entry.Value[0].When.Start.Day;
+                int NextDay;
+                double HoursPerDay = 0.0;
+                for (int i = 0; i < entry.Value.Count -1; ++i)
                 {
-                    if ((Shifts[sizeOfList].PplNeeded - Shifts[sizeOfList].PplAssigned) != 0)
+                    
+                    AllChecked++;
+                    //Overlapping
+                    if (entry.Value[i].When.End > entry.Value[i + 1].When.Start)
                     {
-                        if (Ppl.All.Availability[Shifts[sizeOfList].When] != (0, 0, 0))
+                        InvalidDueToShiftsOverlap++;
+                        if (!repairAttempted && entry.Value.Count > i+1)
                         {
-                            Console.WriteLine("There are still some people who can be assigned to this shift.");
-                            validity = false;
-                            break;
-                            //no to nie jest do konca zrobione, bo nie ma metody Assign i nie można sprawdzić
-                            //czy ktos juz dostał te zmiane
+                            entry.Value.Remove(entry.Value[i + 1]);
+                            repairAttempted = true;
                         }
-                        Console.WriteLine("There is more people needed for this shift.");
-                        //  if(Ppl[howManyPpl].Availability[Shifts[sizeOfList].When() != (0,0,0)])
-                        // Console.WriteLine("This person can be assigned to this shift.");
-                        validity = false;
-                        break;
+                        else
+                        {
+                            //Console.WriteLine("InvalidDueToShiftsOverlap: \t" + (InvalidDueToShiftsOverlap).ToString() +" out of " + AllChecked.ToString());
+                            return false;
+                        }
+                        
                     }
-
-                    if (Ppl.All.Availability[Shifts[sizeOfList].When] == (0, 0, 0))
+                    
+                    //Location
+                    if (entry.Value[i].When.End + GetTravelTime(entry.Value[i].EventId, entry.Value[i+1].EventId) > entry.Value[i + 1].When.Start)
                     {
-                        Console.WriteLine("Not enough people");
-                        validity = false;
-                        break;
-                        //tutaj przy okazji trzeba jakos przypisac zmiany wolontariuszom, żeby możn też było sprawdzić
-                        //czy jest wystarczajaca ilosc z dyspozycyjnoscia na konkretna zmiane
+                        InvalidDueToLocalization++;
+                        if (!repairAttempted && entry.Value.Count > i + 1)
+                        {
+                            entry.Value.Remove(entry.Value[i + 1]);
+                            repairAttempted = true;
+                        }
+                        else 
+                        {
+                            //Console.WriteLine("InvalidDueToLocalization: \t" + (InvalidDueToLocalization).ToString() + " out of " + AllChecked.ToString());
+                            return false;
+                        }
+                        
                     }
 
-                    //elko brakuje mi tu metody Assign, jak będzie, to sprawdzę jeszcze czy nie za długa
-                    //jest jedna zmiana
-
-                    if (Shifts[sizeOfList].When.GetDuration() > maxShiftDuration)
-                        Console.WriteLine("Shift duration is too long");
-                    //tutaj nalezy dodac funkcjonalnosc sprawdzania czy wolontariusz nie ma kilku zmian pod rząd
-                    //które przekraczają maksymalny czas jednej zmiany
-                    sizeOfList--;
+                    //Over Six a Day
+                    NextDay = entry.Value[i+1].When.Start.Day;
+                    if (CurrentDay == NextDay)
+                    {
+                        HoursPerDay += entry.Value[i].When.GetDuration().Hours;
+                        HoursPerDay += entry.Value[i].When.GetDuration().Minutes/60;
+                    } 
+                    else
+                    {
+                        CurrentDay = NextDay;
+                        if (HoursPerDay > 6)
+                        {
+                            InvalidDueToWorkingOver6Day++;
+                            //Console.WriteLine("InvalidDueToWorkingOver6Day: \t" + (InvalidDueToWorkingOver6Day).ToString() + " out of " + AllChecked.ToString());
+                            return false;
+                        }
+                        HoursPerDay = 0.0;
+                    }
                 }
-                howManyPpl--;
             }
-            */
-            return validity;
+            return true;
         }
 
         public double Evaluate(bool eval = false)
@@ -178,18 +205,43 @@ namespace Festivity
                 double averageLoad = totalLoad / nOfPeople;
                 double load;
 
+                FitnessLoad = 0.0;
+                FitnessPref = 0.0;
+
                 foreach (KeyValuePair<Person, List<Shift>> entry in Assignment)
                 {
                     //calculate load of a given person
                     load = entry.Value.Sum(item => item.When.GetDuration().TotalMinutes);
                     //compare to avarage load
-                    Fitness += Math.Sqrt(Math.Pow(load - averageLoad, 2.00));
+                    FitnessLoad += Math.Sqrt(Math.Pow(load - averageLoad, 2.00));
                     //preferences
-                    Fitness += entry.Key.CompareToPref(entry.Value);
+                    FitnessPref += entry.Key.CompareToPref(entry.Value)/100;
                 }
+                Fitness = FitnessLoad + FitnessPref;
+
             }
             return (double)Fitness;
         }
 
+        public TimeSpan GetTravelTime(int location1, int location2)
+        {
+            TimeSpan TravelTime;
+            //if (location1 < Loc.GetLength(0) && location2 < Loc.GetLength(1))
+                TravelTime = new TimeSpan(0, Loc[location1, location2], 0);
+            //else
+              //  TravelTime = new TimeSpan(100000, 0, 0); //set to infinity
+            return TravelTime;
+        }
+
+        public void SaveToFile(string filename)
+        {
+            string output = JsonConvert.SerializeObject(Assignment, Formatting.Indented);
+            using (StreamWriter file = File.CreateText(filename + ".json"))
+            {
+                file.Write(output);
+                //JsonSerializer serializer = new JsonSerializer();
+                //serializer.Serialize(file, Assignment);
+            }
+        }
     }
 }

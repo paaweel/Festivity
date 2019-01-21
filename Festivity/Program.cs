@@ -13,14 +13,14 @@ namespace Festivity
         {
             
             DataCreator d = new DataCreator();
-            d.CreateAndSaveDataToFile("test", 20, 40);
+            d.CreateAndSaveDataToFile("test", 4, 8);
 
-            EAAlgorithm alg = new EAAlgorithm();
+            EAAlgorithm alg = new EAAlgorithm(7, 1, 3, 0.6);
             
             for (int i = 0; i < 100; ++i)
             {
                 alg.Run();
-                Console.WriteLine(alg.GetBestSolutionFitness().Last());
+                Console.WriteLine(alg.BestSolLog.Last());
             }
 
             Console.ReadKey();

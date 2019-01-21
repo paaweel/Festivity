@@ -20,6 +20,8 @@ namespace Festivity
         private IDataLoader DataLoader = new DataLoaderJson();
 
         public List<double> BestSolLog = new List<double>();
+        public List<double> PrefLog = new List<double>();
+        public List<double> LoadLog = new List<double>();
 
         public EAAlgorithm(int populationSize = 10, int elitesNumber = 2, int crossoverNumber = 5, double mutationPr= 0.2)
         {
@@ -38,7 +40,7 @@ namespace Festivity
                 Population.Add(new Solution(Festival, RandomGen));
             }
         }
-
+       
         public List<double> GetBestSolutionFitness()
         {
             return BestSolLog;
@@ -53,6 +55,7 @@ namespace Festivity
             {
                 NewPopulation.Add(new Solution(Festival, RandomGen));
             }
+            
             foreach (var sol in NewPopulation)
             {
                 if (RandomGen.NextDouble() <= _MutationPr)
@@ -147,13 +150,14 @@ namespace Festivity
         public void Evaluate()
         {
             Population.Sort((x, y) => x.Evaluate(true).CompareTo(y.Evaluate(true))); //sort by fitness
-            
+
             if (BestSolution.Evaluate(true) > Population[0].Evaluate(true))
             {
                 BestSolution = new Solution(Population[0]);
-                BestSolLog.Add(BestSolution.Evaluate(true));
-                //event - bestSolution changed
             }
+            BestSolLog.Add(BestSolution.Evaluate(true));
+            LoadLog.Add(BestSolution.FitnessLoad);
+            PrefLog.Add(BestSolution.FitnessPref);
         }
 
         public void CreateInitial()
@@ -162,7 +166,11 @@ namespace Festivity
             {
                 solution.CreateRandom();
             }
+        }
 
+        public void SaveBest(string filename)
+        {
+            BestSolution.SaveToFile(filename);
         }
     }
 }

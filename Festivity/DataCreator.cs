@@ -73,7 +73,7 @@ namespace Festivity
                     }
                     else
                     {
-                        locations[i, j] = random.Next(5, 60);
+                        locations[i, j] = random.Next(2, 30);
                         locations[j, i] = locations[i, j];
                     }
                 }

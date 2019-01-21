@@ -35,15 +35,7 @@ namespace Festivity
             if(errorMsg != "")
                 Console.WriteLine("Values of" + errorMsg + " have not been set properly!");
         }
+
         
-        public TimeSpan GetTravelTime(int location1, int location2)
-        {
-            TimeSpan TravelTime;
-            if (location1 < Locations.GetLength(0) && location2 < Locations.GetLength(1))
-                TravelTime = new TimeSpan(0, Locations[location1, location2], 0);
-            else
-                TravelTime = new TimeSpan(100000, 0, 0); //set to infinity
-            return TravelTime;
-        }
     }
 }

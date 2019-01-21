@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataCreator.cs" />
+    <Compile Include="EvolutionOperator.cs" />
     <Compile Include="IDataLoader.cs" />
     <Compile Include="EAAlgorithm.cs" />
     <Compile Include="Monitor.cs" />
