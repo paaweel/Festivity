@@ -15,10 +15,10 @@ namespace Wpf.CartesianChart.PointShapeLine
             InitializeComponent();
 
             //DataCreator d = new DataCreator();
-            //d.CreateAndSaveDataToFile("test", 5, 15);
+            //d.CreateAndSaveDataToFile("test", 10, 20);
 
-            EAAlgorithm alg = new EAAlgorithm(20, 2, 10);
-
+            EAAlgorithm alg = new EAAlgorithm(35, 9, 20, 0.35);
+            
             SeriesCollection = new SeriesCollection
             {
                 new LineSeries
@@ -50,27 +50,31 @@ namespace Wpf.CartesianChart.PointShapeLine
                 }
             };
             var lab = new List<string>(1000);
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 500; i++)
             {
                 lab.Add((i + 1).ToString());
             }
             Labels = lab.ToArray();
 
             DataContext = this;
-
-            iterate(alg, SeriesCollection);
+            
+            Iterate(alg, SeriesCollection);
             alg.SaveBest("best");
         }
 
-        public void iterate(EAAlgorithm alg, SeriesCollection scol)
+        public void Iterate(EAAlgorithm alg, SeriesCollection scol)
         {
             
-            for (int i = 0; i < 100; ++i)
+            for (int i = 0; i < 500; ++i)
             {
                 alg.Run();
                 SeriesCollection[0].Values.Add(alg.BestSolLog[i]);
                 SeriesCollection[1].Values.Add(alg.LoadLog[i]);
                 SeriesCollection[2].Values.Add(alg.PrefLog[i]);
+                Console.WriteLine("InvalidDueToShiftsOverlap: \t" + (alg.InvalidDueToShiftsOverlap).ToString() + " out of " + alg.AllChecked.ToString());
+                Console.WriteLine("InvalidDueToLocalization: \t" + (alg.InvalidDueToLocalization).ToString() + " out of " + alg.AllChecked.ToString());
+                Console.WriteLine("InvalidDueToWorkingOver6Day: \t" + (alg.InvalidDueToWorkingOver6Day).ToString() + " out of " + alg.AllChecked.ToString());
+
             }
         }
 
