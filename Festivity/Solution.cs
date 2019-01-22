@@ -106,13 +106,12 @@ namespace Festivity
 
                 }
             } while (!Validate());
-            Console.WriteLine("GOT OUT CR---------");
+            
             this.Evaluate();
         }
        
         public bool Validate()
         {
-            Console.WriteLine(AllChecked - InvalidDueToLocalization - InvalidDueToShiftsOverlap - InvalidDueToWorkingOver6Day);
             //sort shifts
             foreach (var entry in Assignment) 
             {
@@ -135,14 +134,13 @@ namespace Festivity
                     if (entry.Value[i].When.End > entry.Value[i + 1].When.Start)
                     {
                         InvalidDueToShiftsOverlap++;
-                        if (!repairAttempted && entry.Value.Count > i+1)
+                        if (!repairAttempted && entry.Value.Count > i+2)
                         {
                             entry.Value.Remove(entry.Value[i + 1]);
                             repairAttempted = true;
                         }
                         else
                         {
-                            //Console.WriteLine("InvalidDueToShiftsOverlap: \t" + (InvalidDueToShiftsOverlap).ToString() +" out of " + AllChecked.ToString());
                             return false;
                         }
                         
@@ -152,14 +150,13 @@ namespace Festivity
                     if (entry.Value[i].When.End + GetTravelTime(entry.Value[i].EventId, entry.Value[i+1].EventId) > entry.Value[i + 1].When.Start)
                     {
                         InvalidDueToLocalization++;
-                        if (!repairAttempted && entry.Value.Count > i + 1)
+                        if (!repairAttempted && entry.Value.Count > i + 2)
                         {
                             entry.Value.Remove(entry.Value[i + 1]);
                             repairAttempted = true;
                         }
                         else 
                         {
-                            //Console.WriteLine("InvalidDueToLocalization: \t" + (InvalidDueToLocalization).ToString() + " out of " + AllChecked.ToString());
                             return false;
                         }
                         
@@ -178,7 +175,6 @@ namespace Festivity
                         if (HoursPerDay > 6)
                         {
                             InvalidDueToWorkingOver6Day++;
-                            //Console.WriteLine("InvalidDueToWorkingOver6Day: \t" + (InvalidDueToWorkingOver6Day).ToString() + " out of " + AllChecked.ToString());
                             return false;
                         }
                         HoursPerDay = 0.0;
@@ -237,6 +233,26 @@ namespace Festivity
         {
             string output = JsonConvert.SerializeObject(Assignment, Formatting.Indented);
             using (StreamWriter file = File.CreateText(filename + ".json"))
+            {
+                file.Write(output);
+                //JsonSerializer serializer = new JsonSerializer();
+                //serializer.Serialize(file, Assignment);
+            }
+            output = "";
+            foreach (KeyValuePair<Person, List<Shift>> entry in Assignment)
+            {
+                output += '\n';
+                output += '(';
+                output += entry.Key.Id;
+                foreach (var item in entry.Value)
+                {
+                    output += ", ";
+                    output += item.Id;
+                }
+                output += ')';
+
+            }
+            using (StreamWriter file = File.CreateText(filename + ".txt"))
             {
                 file.Write(output);
                 //JsonSerializer serializer = new JsonSerializer();

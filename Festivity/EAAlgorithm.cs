@@ -23,6 +23,11 @@ namespace Festivity
         public List<double> PrefLog = new List<double>();
         public List<double> LoadLog = new List<double>();
 
+        public int InvalidDueToShiftsOverlap = 0;
+        public int InvalidDueToLocalization = 0;
+        public int InvalidDueToWorkingOver6Day = 0;
+        public int AllChecked = 0;
+
         public EAAlgorithm(int populationSize = 10, int elitesNumber = 2, int crossoverNumber = 5, double mutationPr= 0.2)
         {
             Festival = DataLoader.LoadData("test");
@@ -158,7 +163,11 @@ namespace Festivity
             BestSolLog.Add(BestSolution.Evaluate(true));
             LoadLog.Add(BestSolution.FitnessLoad);
             PrefLog.Add(BestSolution.FitnessPref);
-        }
+            InvalidDueToShiftsOverlap = Solution.InvalidDueToShiftsOverlap;
+            InvalidDueToLocalization = Solution.InvalidDueToLocalization;
+            InvalidDueToWorkingOver6Day = Solution.InvalidDueToWorkingOver6Day;
+            AllChecked = Solution.AllChecked;
+    }
 
         public void CreateInitial()
         {
